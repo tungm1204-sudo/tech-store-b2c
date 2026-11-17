@@ -5,7 +5,9 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 
 /**
- * Model Review (Đánh giá & Bình luận sản phẩm - Phụ trách chính: Nguyễn Minh Tự - 20232059)
+ * Model Review - Đánh giá & Bình luận sản phẩm (Verified Purchase)
+ * Phân hệ nghiệp vụ: Nguyễn Minh Tự
+ * Thuộc CSDL 16 bảng chuẩn hóa 3NF (Nền tảng Ngày 1-2)
  */
 class Review extends Model
 {

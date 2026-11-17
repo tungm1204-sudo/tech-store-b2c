@@ -5,7 +5,9 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 
 /**
- * Model Product (Sản phẩm công nghệ & Thông số kỹ thuật - Phụ trách: Tuyến)
+ * Model Product - Sản phẩm công nghệ & Thông số kỹ thuật
+ * Phân hệ nghiệp vụ: Tuyến
+ * Thuộc CSDL 16 bảng chuẩn hóa 3NF (Nền tảng Ngày 1-2)
  */
 class Product extends Model
 {

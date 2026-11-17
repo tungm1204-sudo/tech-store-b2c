@@ -8,7 +8,9 @@ use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
 
 /**
- * Model User (Quản lý người dùng & Phân quyền RBAC - Phụ trách: Điền)
+ * Model User - Người dùng & Phân quyền truy cập RBAC
+ * Phân hệ nghiệp vụ: Điền
+ * Thuộc CSDL 16 bảng chuẩn hóa 3NF (Nền tảng Ngày 1-2)
  */
 class User extends Authenticatable
 {

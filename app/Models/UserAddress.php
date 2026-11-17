@@ -5,7 +5,9 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 
 /**
- * Model UserAddress (Sổ địa chỉ giao hàng cá nhân - Phụ trách: Điền)
+ * Model UserAddress - Sổ địa chỉ giao hàng cá nhân
+ * Phân hệ nghiệp vụ: Điền
+ * Thuộc CSDL 16 bảng chuẩn hóa 3NF (Nền tảng Ngày 1-2)
  */
 class UserAddress extends Model
 {

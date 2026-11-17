@@ -5,7 +5,9 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 
 /**
- * Model Category (Danh mục công nghệ - Phụ trách: Tuyến)
+ * Model Category - Danh mục sản phẩm công nghệ
+ * Phân hệ nghiệp vụ: Tuyến
+ * Thuộc CSDL 16 bảng chuẩn hóa 3NF (Nền tảng Ngày 1-2)
  */
 class Category extends Model
 {

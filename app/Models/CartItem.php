@@ -4,6 +4,11 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
+/**
+ * Model CartItem - Chi tiết món hàng trong giỏ
+ * Phân hệ nghiệp vụ: Phúc
+ * Thuộc CSDL 16 bảng chuẩn hóa 3NF (Nền tảng Ngày 1-2)
+ */
 class CartItem extends Model
 {
     protected $fillable = ['cart_id', 'product_id', 'variant_id', 'quantity'];
