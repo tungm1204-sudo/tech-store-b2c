@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="600" height="420" viewBox="0 0 600 420">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#312E81"/>
+      <stop offset="100%" stop-color="#EC4899"/>
+    </linearGradient>
+  </defs>
+  <rect width="600" height="420" rx="24" fill="url(#bg)"/>
+  <circle cx="510" cy="70" r="90" fill="white" fill-opacity="0.07"/>
+  <circle cx="90" cy="350" r="110" fill="white" fill-opacity="0.06"/>
+  <rect x="42" y="38" width="130" height="32" rx="16" fill="white" fill-opacity="0.18"/>
+  <text x="107" y="59" font-family="Segoe UI, Arial" font-size="13" font-weight="bold" fill="white" text-anchor="middle">SMARTPHONE</text>
+  <rect x="110" y="110" width="380" height="180" rx="18" fill="white" fill-opacity="0.12" stroke="white" stroke-opacity="0.28" stroke-width="2"/>
+  <text x="300" y="182" font-family="Segoe UI, Arial" font-size="22" font-weight="bold" fill="white" fill-opacity="0.85" text-anchor="middle">Apple</text>
+  <text x="300" y="222" font-family="Segoe UI, Arial" font-size="25" font-weight="bold" fill="white" text-anchor="middle">iPhone 15 128GB</text>
+  <text x="300" y="358" font-family="Segoe UI, Arial" font-size="14" fill="white" fill-opacity="0.72" text-anchor="middle">TECHSTORE B2C OFFICIAL GADGET</text>
+</svg>
