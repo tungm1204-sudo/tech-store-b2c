@@ -5,7 +5,9 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 
 /**
- * Model StockReceipt (Phiếu nhập kho lô hàng & IMEI/Serial - Phụ trách: Trung Anh & Tự)
+ * Model StockReceipt - Phiếu nhập kho lô hàng & IMEI/Serial
+ * Phân hệ nghiệp vụ: Trung Anh & Tự
+ * Thuộc CSDL 16 bảng chuẩn hóa 3NF (Nền tảng Ngày 1-2)
  */
 class StockReceipt extends Model
 {

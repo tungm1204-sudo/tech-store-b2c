@@ -5,7 +5,9 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 
 /**
- * Model WarrantyRequest (Đổi trả & Bảo hành thiết bị - Phụ trách: Trung Anh)
+ * Model WarrantyRequest - Yêu cầu Đổi trả & Bảo hành thiết bị (RMA)
+ * Phân hệ nghiệp vụ: Trung Anh
+ * Thuộc CSDL 16 bảng chuẩn hóa 3NF (Nền tảng Ngày 1-2)
  */
 class WarrantyRequest extends Model
 {

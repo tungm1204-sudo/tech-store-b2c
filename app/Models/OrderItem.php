@@ -4,6 +4,11 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
+/**
+ * Model OrderItem - Chi tiết sản phẩm trong đơn hàng
+ * Phân hệ nghiệp vụ: Phúc & Trung Anh
+ * Thuộc CSDL 16 bảng chuẩn hóa 3NF (Nền tảng Ngày 1-2)
+ */
 class OrderItem extends Model
 {
     protected $fillable = [

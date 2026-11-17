@@ -5,7 +5,9 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 
 /**
- * Model Cart (Giỏ hàng lưu CSDL - Phụ trách: Phúc)
+ * Model Cart - Giỏ hàng lưu trữ database
+ * Phân hệ nghiệp vụ: Phúc
+ * Thuộc CSDL 16 bảng chuẩn hóa 3NF (Nền tảng Ngày 1-2)
  */
 class Cart extends Model
 {

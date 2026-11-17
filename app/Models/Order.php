@@ -5,7 +5,9 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 
 /**
- * Model Order (Đơn hàng & Trạng thái vận hành - Phụ trách: Phúc & Trung Anh)
+ * Model Order - Đơn hàng & Vận hành trạng thái
+ * Phân hệ nghiệp vụ: Phúc & Trung Anh
+ * Thuộc CSDL 16 bảng chuẩn hóa 3NF (Nền tảng Ngày 1-2)
  */
 class Order extends Model
 {

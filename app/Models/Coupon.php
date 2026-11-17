@@ -5,7 +5,9 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 
 /**
- * Model Coupon (Mã giảm giá / Voucher - Phụ trách: Phúc)
+ * Model Coupon - Mã giảm giá & Khuyến mãi
+ * Phân hệ nghiệp vụ: Phúc
+ * Thuộc CSDL 16 bảng chuẩn hóa 3NF (Nền tảng Ngày 1-2)
  */
 class Coupon extends Model
 {

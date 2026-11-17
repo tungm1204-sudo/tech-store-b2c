@@ -4,6 +4,11 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
+/**
+ * Model ProductVariant - Biến thể cấu hình (RAM/SSD/Màu sắc)
+ * Phân hệ nghiệp vụ: Tuyến
+ * Thuộc CSDL 16 bảng chuẩn hóa 3NF (Nền tảng Ngày 1-2)
+ */
 class ProductVariant extends Model
 {
     protected $fillable = [
