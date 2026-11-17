@@ -1,6 +1,10 @@
 <?php
 
+use App\Http\Controllers\Admin\AdminAnalyticsController;
+use App\Http\Controllers\Admin\AdminReviewController;
+use App\Http\Controllers\AiAdvisorController;
 use App\Http\Controllers\HomeController;
+use App\Http\Controllers\ReviewController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -59,3 +63,20 @@ if (app()->environment('local')) {
  | 5. TỰ - Đánh giá & Bình luận, Thống kê doanh thu, Trợ lý AI
  * ======================================================================== */
 
+// Đánh giá & Bình luận sản phẩm (kèm huy hiệu Verified Purchase)
+Route::get('/products/{product:slug}/reviews', [ReviewController::class, 'index'])->name('reviews.index');
+Route::post('/products/{product}/reviews', [ReviewController::class, 'store'])->name('reviews.store')->middleware('auth');
+Route::delete('/reviews/{review}', [ReviewController::class, 'destroy'])->name('reviews.destroy')->middleware('auth');
+
+// Trợ lý AI tư vấn thiết bị công nghệ
+Route::get('/ai-advisor', [AiAdvisorController::class, 'index'])->name('ai_advisor.index');
+
+// Quản trị Admin: Dashboard thống kê, Xuất báo cáo CSV & Quản lý duyệt đánh giá
+Route::prefix('admin')->name('admin.')->middleware(['auth', 'role:staff,admin'])->group(function () {
+    Route::get('/dashboard', [AdminAnalyticsController::class, 'index'])->name('dashboard');
+    Route::get('/reports/export', [AdminAnalyticsController::class, 'export'])->name('reports.export');
+    Route::get('/reviews', [AdminReviewController::class, 'index'])->name('reviews.index');
+    Route::post('/reviews/{review}/reply', [AdminReviewController::class, 'reply'])->name('reviews.reply');
+    Route::patch('/reviews/{review}/toggle', [AdminReviewController::class, 'toggleApproval'])->name('reviews.toggle');
+    Route::delete('/reviews/{review}', [AdminReviewController::class, 'destroy'])->name('reviews.destroy');
+});
