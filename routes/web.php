@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\HomeController;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\CatalogController;
 
 /*
 |--------------------------------------------------------------------------
@@ -39,6 +40,10 @@ if (app()->environment('local')) {
  |    Gợi ý tên route: products.index, products.show (theo slug),
  |                     admin.products.*, admin.catalog.index ...
  * ======================================================================== */
+
+Route::get('/products', [CatalogController::class, 'index'])->name('products.index');
+Route::get('/products/{slug}', [CatalogController::class, 'show'])->name('products.show');
+
 
 
 /* ========================================================================
