@@ -1,7 +1,8 @@
-@extends('layouts.app')
+@extends('layouts.admin')
+
+@section('page_title', 'Sửa danh mục')
 
 @section('content')
-<h1>Sửa danh mục</h1>
 
 <form method="POST" action="{{ route('admin.categories.update', $category) }}">
     @csrf

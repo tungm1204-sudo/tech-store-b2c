@@ -1,7 +1,10 @@
-@extends('layouts.app')
+@extends('layouts.admin')
+
+@section('page_title', 'Sửa thương hiệu')
 
 @section('content')
-<h1>Sửa thương hiệu</h1>
+
+
 
 <form method="POST" action="{{ route('admin.brands.update', $brand) }}">
     @csrf

@@ -1,7 +1,8 @@
-@extends('layouts.app')
+@extends('layouts.admin')
+
+@section('page_title', 'Sửa sản phẩm')
 
 @section('content')
-<h1>Sửa sản phẩm</h1>
 
 <form method="POST" action="{{ route('admin.products.update', $product) }}" enctype="multipart/form-data">
     @csrf

@@ -1,72 +1,126 @@
-@if ($errors->any())
-    <ul style="color:red">
-        @foreach ($errors->all() as $error)
-            <li>{{ $error }}</li>
-        @endforeach
-    </ul>
-@endif
+@php
+    $p = $product ?? null;
+    $val = fn ($field, $default = '') => old($field, $p?->{$field} ?? $default);
+@endphp
 
-<h3>Thông tin chung</h3>
-<p>Tên: <input type="text" name="name" value="{{ old('name', $product->name ?? '') }}" required></p>
-<p>SKU: <input type="text" name="sku" value="{{ old('sku', $product->sku ?? '') }}" required></p>
+<div class="row g-4">
+    <div class="col-lg-8">
+        <div class="card border-0 shadow-sm rounded-4">
+            <div class="card-body p-4">
+                <h6 class="fw-bold text-primary mb-3">Thông tin chung</h6>
+                <div class="row g-3">
+                    <div class="col-md-8">
+                        <label class="form-label">Tên sản phẩm</label>
+                        <input type="text" name="name" class="form-control" value="{{ $val('name') }}" required>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label">SKU</label>
+                        <input type="text" name="sku" class="form-control" value="{{ $val('sku') }}" required>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label">Thương hiệu</label>
+                        <select name="brand_id" class="form-select" required>
+                            @foreach ($brands as $brand)
+                                <option value="{{ $brand->id }}" @selected(old('brand_id', $p?->brand_id) == $brand->id)>{{ $brand->name }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label">Danh mục</label>
+                        <select name="category_id" class="form-select" required>
+                            @foreach ($categories as $category)
+                                <option value="{{ $category->id }}" @selected(old('category_id', $p?->category_id) == $category->id)>{{ $category->name }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label">Nhu cầu sử dụng</label>
+                        <select name="usage_type" class="form-select">
+                            <option value="">-- Chọn --</option>
+                            @foreach ($usageOptions as $value => $label)
+                                <option value="{{ $value }}" @selected(old('usage_type', $p?->usage_type) == $value)>{{ $label }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                    <div class="col-12">
+                        <label class="form-label">Mô tả ngắn</label>
+                        <input type="text" name="short_description" class="form-control" value="{{ $val('short_description') }}">
+                    </div>
+                    <div class="col-12">
+                        <label class="form-label">Mô tả chi tiết</label>
+                        <textarea name="description" rows="4" class="form-control">{{ $val('description') }}</textarea>
+                    </div>
+                </div>
 
-<p>Thương hiệu:
-    <select name="brand_id" required>
-        @foreach ($brands as $brand)
-            <option value="{{ $brand->id }}" @selected(old('brand_id', $product->brand_id ?? '') == $brand->id)>
-                {{ $brand->name }}
-            </option>
-        @endforeach
-    </select>
-</p>
+                <hr class="my-4">
 
-<p>Danh mục:
-    <select name="category_id" required>
-        @foreach ($categories as $category)
-            <option value="{{ $category->id }}" @selected(old('category_id', $product->category_id ?? '') == $category->id)>
-                {{ $category->name }}
-            </option>
-        @endforeach
-    </select>
-</p>
+                <h6 class="fw-bold text-primary mb-3">Thông số kỹ thuật</h6>
+                <div class="row g-3">
+                    <div class="col-md-6"><label class="form-label">CPU</label><input type="text" name="cpu" class="form-control" value="{{ $val('cpu') }}"></div>
+                    <div class="col-md-6"><label class="form-label">GPU</label><input type="text" name="gpu" class="form-control" value="{{ $val('gpu') }}"></div>
+                    <div class="col-md-4"><label class="form-label">RAM</label><input type="text" name="ram" class="form-control" value="{{ $val('ram') }}" placeholder="VD: 16GB"></div>
+                    <div class="col-md-4"><label class="form-label">ROM</label><input type="text" name="rom" class="form-control" value="{{ $val('rom') }}" placeholder="VD: 512GB SSD"></div>
+                    <div class="col-md-4"><label class="form-label">Pin</label><input type="text" name="battery" class="form-control" value="{{ $val('battery') }}"></div>
+                    <div class="col-12"><label class="form-label">Màn hình</label><input type="text" name="screen" class="form-control" value="{{ $val('screen') }}"></div>
+                </div>
+            </div>
+        </div>
+    </div>
 
-<p>Nhu cầu sử dụng:
-    <select name="usage_type">
-        <option value="">-- Chọn --</option>
-        @foreach ($usageOptions as $value => $label)
-            <option value="{{ $value }}" @selected(old('usage_type', $product->usage_type ?? '') == $value)>
-                {{ $label }}
-            </option>
-        @endforeach
-    </select>
-</p>
+    <div class="col-lg-4">
+        <div class="card border-0 shadow-sm rounded-4 mb-4">
+            <div class="card-body p-4">
+                <h6 class="fw-bold text-primary mb-3">Giá và kho</h6>
+                <div class="mb-3">
+                    <label class="form-label">Giá gốc (đ)</label>
+                    <input type="number" name="price" class="form-control" value="{{ $val('price') }}" required>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Giá khuyến mãi (đ)</label>
+                    <input type="number" name="sale_price" class="form-control" value="{{ $val('sale_price') }}">
+                </div>
+                <div class="row g-2">
+                    <div class="col-6">
+                        <label class="form-label">Tồn kho</label>
+                        <input type="number" name="stock_quantity" class="form-control" value="{{ $val('stock_quantity', 0) }}" required>
+                    </div>
+                    <div class="col-6">
+                        <label class="form-label">Ngưỡng cảnh báo</label>
+                        <input type="number" name="low_stock_threshold" class="form-control" value="{{ $val('low_stock_threshold', 5) }}" required>
+                    </div>
+                </div>
+            </div>
+        </div>
 
-<h3>Giá và kho</h3>
-<p>Giá gốc: <input type="number" name="price" value="{{ old('price', $product->price ?? '') }}" required></p>
-<p>Giá khuyến mãi: <input type="number" name="sale_price" value="{{ old('sale_price', $product->sale_price ?? '') }}"></p>
-<p>Tồn kho: <input type="number" name="stock_quantity" value="{{ old('stock_quantity', $product->stock_quantity ?? 0) }}" required></p>
-<p>Ngưỡng cảnh báo sắp hết: <input type="number" name="low_stock_threshold" value="{{ old('low_stock_threshold', $product->low_stock_threshold ?? 5) }}" required></p>
+        <div class="card border-0 shadow-sm rounded-4 mb-4">
+            <div class="card-body p-4">
+                <h6 class="fw-bold text-primary mb-3">Ảnh đại diện</h6>
+                @if (!empty($p?->thumbnail))
+                    <img src="{{ asset($p->thumbnail) }}" class="img-fluid rounded-3 bg-light p-2 mb-3" alt="">
+                @endif
+                <input type="file" name="thumbnail_file" class="form-control" accept="image/*">
+            </div>
+        </div>
 
-<h3>Thông số kỹ thuật</h3>
-<p>CPU: <input type="text" name="cpu" value="{{ old('cpu', $product->cpu ?? '') }}"></p>
-<p>RAM: <input type="text" name="ram" value="{{ old('ram', $product->ram ?? '') }}"></p>
-<p>ROM: <input type="text" name="rom" value="{{ old('rom', $product->rom ?? '') }}"></p>
-<p>GPU: <input type="text" name="gpu" value="{{ old('gpu', $product->gpu ?? '') }}"></p>
-<p>Màn hình: <input type="text" name="screen" value="{{ old('screen', $product->screen ?? '') }}"></p>
-<p>Pin: <input type="text" name="battery" value="{{ old('battery', $product->battery ?? '') }}"></p>
+        <div class="card border-0 shadow-sm rounded-4 mb-4">
+            <div class="card-body p-4">
+                <h6 class="fw-bold text-primary mb-3">Trạng thái</h6>
+                <div class="form-check form-switch mb-2">
+                    <input class="form-check-input" type="checkbox" name="is_active" value="1" id="is_active"
+                           @checked(old('is_active', $p?->is_active ?? true))>
+                    <label class="form-check-label" for="is_active">Đang bán</label>
+                </div>
+                <div class="form-check form-switch">
+                    <input class="form-check-input" type="checkbox" name="is_featured" value="1" id="is_featured"
+                           @checked(old('is_featured', $p?->is_featured ?? false))>
+                    <label class="form-check-label" for="is_featured">Sản phẩm nổi bật</label>
+                </div>
+            </div>
+        </div>
 
-<h3>Mô tả</h3>
-<p>Mô tả ngắn: <input type="text" name="short_description" value="{{ old('short_description', $product->short_description ?? '') }}"></p>
-<p><textarea name="description" rows="5" cols="60">{{ old('description', $product->description ?? '') }}</textarea></p>
-
-<h3>Ảnh đại diện</h3>
-@if (!empty($product->thumbnail))
-    <p>Ảnh hiện tại: <img src="{{ asset($product->thumbnail) }}" width="100"></p>
-@endif
-<p><input type="file" name="thumbnail_file" accept="image/*"></p>
-
-<h3>Trạng thái</h3>
-<p><label><input type="checkbox" name="is_active" value="1" @checked(old('is_active', $product->is_active ?? true))> Đang bán</label></p>
-<p><label><input type="checkbox" name="is_featured" value="1" @checked(old('is_featured', $product->is_featured ?? false))> Nổi bật</label></p>
-
-<button type="submit">Lưu sản phẩm</button>
+        <div class="d-grid gap-2">
+            <button type="submit" class="btn btn-primary btn-lg"><i class="bi bi-check2-circle me-1"></i>Lưu sản phẩm</button>
+            <a href="{{ route('admin.products.index') }}" class="btn btn-outline-secondary">Hủy</a>
+        </div>
+    </div>
+</div>
