@@ -3,6 +3,9 @@
 use App\Http\Controllers\HomeController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\CatalogController;
+use App\Http\Controllers\Admin\CategoryController as AdminCategoryController;
+use App\Http\Controllers\Admin\BrandController as AdminBrandController;
+use App\Http\Controllers\Admin\ProductController as AdminProductController;
 
 /*
 |--------------------------------------------------------------------------
@@ -43,6 +46,12 @@ if (app()->environment('local')) {
 
 Route::get('/products', [CatalogController::class, 'index'])->name('products.index');
 Route::get('/products/{slug}', [CatalogController::class, 'show'])->name('products.show');
+
+Route::prefix('admin')->name('admin.')->group(function () {
+    Route::resource('categories', AdminCategoryController::class)->except(['show']);
+    Route::resource('brands', AdminBrandController::class)->except(['show']);
+    Route::resource('products', AdminProductController::class)->except(['show']);
+});
 
 
 
