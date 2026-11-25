@@ -1,10 +1,3 @@
-@extends('layouts.ops')
-        @section('title', '...')            {{-- tiêu đề tab trình duyệt --}}
-        @section('page_title', '...')       {{-- tiêu đề trên header (của layouts.admin) --}}
-        @section('ops_heading', '...')      {{-- (tuỳ chọn) tiêu đề lớn trong trang --}}
-        @section('ops_actions') ... @endsection   {{-- (tuỳ chọn) nút bên phải tiêu đề --}}
-        @section('ops_content') ... @endsection   {{-- nội dung chính --}}
---}}
 @extends('layouts.admin')
 
 @push('styles')
