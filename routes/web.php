@@ -1,6 +1,8 @@
 <?php
 
 use App\Http\Controllers\HomeController;
+use App\Http\Controllers\CartController;
+use App\Http\Controllers\CheckoutController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -46,7 +48,18 @@ if (app()->environment('local')) {
  |    Gợi ý tên route: cart.index, cart.add, checkout.index,
  |                     checkout.store, admin.coupons.index ...
  * ======================================================================== */
+Route::get('/cart', [CartController::class, 'index'])->name('cart.index');
+Route::post('/cart/items', [CartController::class, 'add'])->name('cart.add');
+Route::patch('/cart/items/{item}', [CartController::class, 'update'])->whereNumber('item')->name('cart.update');
+Route::delete('/cart/items/{item}', [CartController::class, 'remove'])->whereNumber('item')->name('cart.remove');
+Route::post('/cart/coupon', [CartController::class, 'applyCoupon'])->name('cart.coupon.apply');
+Route::delete('/cart/coupon', [CartController::class, 'removeCoupon'])->name('cart.coupon.remove');
 
+Route::get('/checkout', [CheckoutController::class, 'index'])->name('checkout.index');
+Route::post('/checkout', [CheckoutController::class, 'store'])->middleware('throttle:10,1')->name('checkout.store');
+Route::get('/checkout/orders/{order}/payment', [CheckoutController::class, 'payment'])->whereNumber('order')->name('checkout.payment');
+Route::get('/checkout/orders/{order}/result', [CheckoutController::class, 'result'])->whereNumber('order')->name('checkout.result');
+Route::post('/checkout/orders/{order}/mock-paid', [CheckoutController::class, 'mockPaid'])->whereNumber('order')->name('checkout.mock-paid');
 
 /* ========================================================================
  | 4. TRUNG ANH - Quản lý Đơn hàng, Đổi trả / Bảo hành, Nhập kho
