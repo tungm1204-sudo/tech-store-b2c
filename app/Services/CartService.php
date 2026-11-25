@@ -20,6 +20,12 @@ use Illuminate\Validation\ValidationException;
  */
 class CartService
 {
+    /** Ngưỡng freeship tính trên giá trị sau giảm giá. */
+    public const FREE_SHIPPING_THRESHOLD = 5000000.0;
+
+    /** Phí vận chuyển mặc định khi chưa đạt ngưỡng freeship. */
+    public const SHIPPING_FEE = 30000.0;
+
     public function getCart(bool $create = true): ?Cart
     {
         $sessionId = Session::getId();
@@ -158,9 +164,7 @@ class CartService
             $item = $itemQuery->lockForUpdate()->first();
 
             $newQuantity = ($item ? $item->quantity : 0) + $quantity;
-            $available = $variant
-                ? min((int) $variant->stock_quantity, (int) $product->stock_quantity)
-                : (int) $product->stock_quantity;
+            $available = $this->availableQuantity($cart, $product, $variant, $item?->id);
 
             if ($newQuantity > $available) {
                 throw ValidationException::withMessages([
@@ -203,9 +207,7 @@ class CartService
                 throw ValidationException::withMessages(['quantity' => 'Vui lòng chọn phân loại sản phẩm trước khi cập nhật.']);
             }
 
-            $available = $variant
-                ? min((int) $variant->stock_quantity, (int) $product->stock_quantity)
-                : (int) $product->stock_quantity;
+            $available = $this->availableQuantity($cart, $product, $variant, $item->id);
 
             if ($quantity > $available) {
                 throw ValidationException::withMessages(['quantity' => "Kho chỉ còn {$available} sản phẩm."]);
@@ -270,7 +272,7 @@ class CartService
     public function activeCoupon(?float $subtotal = null): ?Coupon
     {
         $code = Session::get('coupon_code');
-        if (!$code) {
+        if ($code === null || $code === '') {
             return null;
         }
 
@@ -303,6 +305,42 @@ class CartService
         return max(0, $base + $adjustment);
     }
 
+    /**
+     * Phí ship được tính từ một nguồn duy nhất để giỏ hàng và checkout
+     * không bao giờ lệch nhau.
+     */
+    public function shippingFee(float $amountAfterDiscount): float
+    {
+        return $amountAfterDiscount >= self::FREE_SHIPPING_THRESHOLD ? 0.0 : self::SHIPPING_FEE;
+    }
+
+    /**
+     * Số lượng tối đa có thể đặt cho một dòng giỏ hàng.
+     *
+     * products.stock_quantity là TỔNG tồn kho của mọi biến thể, nên ngoài việc
+     * kiểm tra tồn của riêng biến thể phải trừ đi các dòng khác cùng sản phẩm.
+     * Nếu không, khách có thể thêm 8GB + 8GB của cùng một sản phẩm dù tổng kho chỉ 10.
+     */
+    private function availableQuantity(
+        Cart $cart,
+        Product $product,
+        ?ProductVariant $variant,
+        ?int $excludeItemId = null
+    ): int {
+        $otherQuantity = (int) $cart->items()
+            ->when($excludeItemId, fn ($query) => $query->whereKeyNot($excludeItemId))
+            ->where('product_id', $product->id)
+            ->sum('quantity');
+
+        $productAvailable = max(0, (int) $product->stock_quantity - $otherQuantity);
+
+        if (!$variant) {
+            return $productAvailable;
+        }
+
+        return max(0, min((int) $variant->stock_quantity, $productAvailable));
+    }
+
     public function summary(?Cart $cart): array
     {
         $cart = $cart ?: new Cart();
@@ -311,7 +349,7 @@ class CartService
         $subtotal = $this->subtotal($cart);
         $coupon = $this->activeCoupon($subtotal);
         $discount = $coupon ? $coupon->calculateDiscount($subtotal) : 0.0;
-        $shipping = ($subtotal - $discount) >= 5000000 || $subtotal <= 0 ? 0.0 : 30000.0;
+        $shipping = $subtotal > 0 ? $this->shippingFee($subtotal - $discount) : 0.0;
 
         return [
             'subtotal' => $subtotal,

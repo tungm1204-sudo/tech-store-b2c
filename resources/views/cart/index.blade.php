@@ -6,6 +6,7 @@
 @php
     $items = $cart ? $cart->items : collect();
     $money = fn ($value) => number_format((float) $value, 0, ',', '.') . '₫';
+    $shopUrl = ts_route(['products.index', 'dev.shop', 'home']);
 @endphp
 
 <div class="d-flex flex-wrap align-items-center justify-content-between gap-3 mb-4">
@@ -14,7 +15,7 @@
         <h1 class="fw-bold mb-1">Giỏ hàng của bạn</h1>
         <p class="text-secondary mb-0">Kiểm tra sản phẩm và mã ưu đãi trước khi thanh toán.</p>
     </div>
-    <a href="{{ ts_route('products.index') }}" class="btn btn-outline-primary rounded-pill">
+    <a href="{{ $shopUrl }}" class="btn btn-outline-primary rounded-pill">
         <i class="bi bi-arrow-left me-1"></i> Tiếp tục mua sắm
     </a>
 </div>
@@ -24,7 +25,7 @@
         <div class="display-3 text-primary mb-3"><i class="bi bi-cart-x"></i></div>
         <h3 class="fw-bold">Giỏ hàng đang trống</h3>
         <p class="text-secondary">Hãy khám phá các thiết bị công nghệ và thêm sản phẩm bạn yêu thích.</p>
-        <a href="{{ ts_route('products.index') }}" class="btn btn-primary px-4 rounded-pill mx-auto">Khám phá sản phẩm</a>
+        <a href="{{ $shopUrl }}" class="btn btn-primary px-4 rounded-pill mx-auto">Khám phá sản phẩm</a>
     </div>
 @else
 <div class="row g-4">
@@ -67,7 +68,7 @@
                                 @csrf
                                 @method('PATCH')
                                 <label class="small text-secondary d-none d-md-inline">SL</label>
-                                <input type="number" name="quantity" min="1" max="99" value="{{ $item->quantity }}" class="form-control form-control-sm text-center" style="max-width:82px">
+                                <input type="number" name="quantity" min="1" step="1" value="{{ $item->quantity }}" class="form-control form-control-sm text-center" style="max-width:82px">
                                 <button class="btn btn-sm btn-outline-primary" title="Cập nhật số lượng"><i class="bi bi-arrow-repeat"></i></button>
                             </form>
                             <form action="{{ route('cart.remove', $item->id) }}" method="POST" class="mt-2">

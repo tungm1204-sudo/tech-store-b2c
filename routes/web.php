@@ -21,6 +21,7 @@ use Illuminate\Support\Facades\Route;
 /* ========================================================================
  | 0. DÙNG CHUNG (Tự đã dựng sẵn ở Ngày 1-2) - KHÔNG SỬA
  * ======================================================================== */
+
 Route::get('/', [HomeController::class, 'index'])->name('home');
 Route::get('/locale/{locale}', [HomeController::class, 'switchLocale'])->name('locale.switch');
 
@@ -61,6 +62,16 @@ Route::get('/checkout/orders/{order}/payment', [CheckoutController::class, 'paym
 Route::get('/checkout/orders/{order}/result', [CheckoutController::class, 'result'])->whereNumber('order')->name('checkout.result');
 Route::post('/checkout/orders/{order}/mock-paid', [CheckoutController::class, 'mockPaid'])->whereNumber('order')->name('checkout.mock-paid');
 
+if (app()->environment('local')) {
+    Route::get('/dev/shop', [\App\Http\Controllers\DevShopController::class, 'index'])->name('dev.shop');
+}
+
+Route::prefix('admin')->name('admin.')
+    ->middleware(['auth', 'role:admin'])
+    ->group(function () {
+        Route::resource('coupons', \App\Http\Controllers\Admin\CouponController::class)->except(['show']);
+    });
+
 /* ========================================================================
  | 4. TRUNG ANH - Quản lý Đơn hàng, Đổi trả / Bảo hành, Nhập kho
  |    Gợi ý tên route: orders.index, orders.show, warranties.index,
@@ -71,4 +82,3 @@ Route::post('/checkout/orders/{order}/mock-paid', [CheckoutController::class, 'm
 /* ========================================================================
  | 5. TỰ - Đánh giá & Bình luận, Thống kê doanh thu, Trợ lý AI
  * ======================================================================== */
-

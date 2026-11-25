@@ -57,7 +57,7 @@ class Coupon extends Model
             return 0.0;
         }
         if ($this->discount_type === 'percent') {
-            return round($subtotal * ((float) $this->discount_value / 100), 0);
+            return min($subtotal, round($subtotal * ((float) $this->discount_value / 100), 0));
         }
         return min($subtotal, (float) $this->discount_value);
     }

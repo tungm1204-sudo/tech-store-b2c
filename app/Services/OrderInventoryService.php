@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Models\Coupon;
 use App\Models\Order;
 use App\Models\Product;
 use App\Models\ProductVariant;
@@ -37,6 +38,8 @@ class OrderInventoryService
                 }
 
                 $product->stock_quantity += (int) $item->quantity;
+                // Checkout đã cộng sold_count khi chốt đơn nên phải trừ lại khi hủy.
+                $product->sold_count = max(0, (int) $product->sold_count - (int) $item->quantity);
                 $product->save();
 
                 if ($item->variant_id) {
@@ -49,6 +52,15 @@ class OrderInventoryService
                         $variant->stock_quantity += (int) $item->quantity;
                         $variant->save();
                     }
+                }
+            }
+
+            // Trả lại lượt dùng mã giảm giá đã bị Checkout tính khi đặt đơn.
+            if ($order->coupon_id) {
+                $coupon = Coupon::whereKey($order->coupon_id)->lockForUpdate()->first();
+                if ($coupon && $coupon->used_count > 0) {
+                    $coupon->used_count = (int) $coupon->used_count - 1;
+                    $coupon->save();
                 }
             }
 

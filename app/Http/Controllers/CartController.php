@@ -2,8 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Product;
-use App\Models\ProductVariant;
 use App\Services\CartService;
 use Illuminate\Http\Request;
 
@@ -11,10 +9,12 @@ class CartController extends Controller
 {
     public function index(CartService $cartService)
     {
-        $cart = $cartService->getCart(true);
+        // Không tạo bản ghi giỏ hàng rỗng chỉ vì khách truy cập trang này.
+        $cart = $cartService->getCart(false);
         $summary = $cartService->summary($cart);
 
-        return view('cart.index', compact('cart', 'summary'))->with('cartService', $cartService);
+        return view('cart.index', compact('cart', 'summary'))
+            ->with('cartService', $cartService);
     }
 
     public function add(Request $request, CartService $cartService)
@@ -22,7 +22,7 @@ class CartController extends Controller
         $data = $request->validate([
             'product_id' => ['required', 'integer', 'exists:products,id'],
             'variant_id' => ['nullable', 'integer', 'exists:product_variants,id'],
-            'quantity' => ['nullable', 'integer', 'min:1', 'max:99'],
+            'quantity' => ['nullable', 'integer', 'min:1'],
         ]);
 
         $cartService->add(
@@ -31,13 +31,16 @@ class CartController extends Controller
             isset($data['variant_id']) ? (int) $data['variant_id'] : null
         );
 
-        return redirect()->route('cart.index')->with('success', 'Đã thêm sản phẩm vào giỏ hàng.');
+        return redirect()->back()->with(
+            'success',
+            'Đã thêm sản phẩm vào giỏ hàng. Bạn có thể tiếp tục mua sắm hoặc mở giỏ hàng ở phía trên.'
+        );
     }
 
     public function update(Request $request, int $item, CartService $cartService)
     {
         $data = $request->validate([
-            'quantity' => ['required', 'integer', 'min:1', 'max:99'],
+            'quantity' => ['required', 'integer', 'min:1'],
         ]);
 
         $cartService->update($item, (int) $data['quantity']);
@@ -63,7 +66,7 @@ class CartController extends Controller
         return redirect()->route('cart.index')->with('success', "Đã áp dụng mã {$coupon->code}.");
     }
 
-    public function removeCoupon(CartService $cartService)
+    public function removeCoupon()
     {
         session()->forget('coupon_code');
 

@@ -22,6 +22,22 @@ class CheckoutController extends Controller
     private function ensureCustomer()
     {
         if (Auth::check()) {
+            $user = Auth::user();
+
+            if (!$user->is_active) {
+                Auth::logout();
+                request()->session()->invalidate();
+                request()->session()->regenerateToken();
+
+                if (Route::has('login')) {
+                    return redirect()->route('login')->with('error', 'Tài khoản của bạn đã bị tạm khóa.');
+                }
+
+                return redirect()->route('home')->with('error', 'Tài khoản của bạn đã bị tạm khóa.');
+            }
+
+            abort_unless($user->role === 'customer', 403, 'Chỉ khách hàng mới có thể đặt hàng.');
+
             return null;
         }
 
@@ -34,7 +50,19 @@ class CheckoutController extends Controller
                 ->with('info', 'Vui lòng đăng nhập tài khoản khách hàng để tiếp tục thanh toán.');
         }
 
-        abort(403, 'Bạn cần đăng nhập để đặt hàng.');
+        return redirect()->route('home')->with('error', 'Bạn cần đăng nhập để đặt hàng.');
+    }
+
+    /**
+     * order_code có ràng buộc unique: thử lại cho đến khi chắc chắn không trùng.
+     */
+    private function generateOrderCode(): string
+    {
+        do {
+            $code = 'TS-' . now()->format('Ymd') . '-' . strtoupper(Str::random(8));
+        } while (Order::where('order_code', $code)->exists());
+
+        return $code;
     }
 
     public function index(CartService $cartService)
@@ -49,7 +77,9 @@ class CheckoutController extends Controller
         }
 
         $summary = $cartService->summary($cart);
-        $addresses = Auth::user()->addresses()->get();
+        /** @var \App\Models\User $user */
+        $user = Auth::user();
+        $addresses = $user->addresses()->get();
 
         return view('checkout.index', compact('cart', 'summary', 'addresses'))->with('cartService', $cartService);
     }
@@ -62,7 +92,7 @@ class CheckoutController extends Controller
 
         $data = $request->validate([
             'customer_name' => ['required', 'string', 'max:120'],
-            'customer_phone' => ['required', 'string', 'max:25', 'regex:/^[0-9+().\-\s]{8,25}$/'],
+            'customer_phone' => ['required', 'string', 'max:25', 'regex:/^(?=(?:\D*\d){8,})[0-9+().\-\s]{8,25}$/'],
             'customer_email' => ['nullable', 'email', 'max:150'],
             'shipping_address' => ['required', 'string', 'max:1000'],
             'note' => ['nullable', 'string', 'max:2000'],
@@ -71,8 +101,13 @@ class CheckoutController extends Controller
 
         $user = Auth::user();
         $couponCode = session('coupon_code');
+        if ($couponCode !== null && $couponCode !== '' && !$cartService->activeCoupon()) {
+            // Giỏ hàng đã không còn hiển thị mã này nên không để nó chặn đơn hàng.
+            session()->forget('coupon_code');
+            $couponCode = null;
+        }
 
-        $order = DB::transaction(function () use ($data, $user, $couponCode) {
+        $order = DB::transaction(function () use ($data, $user, $couponCode, $cartService) {
             $cart = Cart::where('user_id', $user->id)->lockForUpdate()->first();
 
             // Nếu user vừa đăng nhập và giỏ còn đang gắn session, CartService sẽ nhập lại.
@@ -168,7 +203,7 @@ class CheckoutController extends Controller
 
             $coupon = null;
             $discount = 0.0;
-            if ($couponCode) {
+            if ($couponCode !== null && $couponCode !== '') {
                 $coupon = Coupon::where('code', $couponCode)->lockForUpdate()->first();
                 if (!$coupon || !$coupon->isValidForSubtotal($subtotal)) {
                     throw ValidationException::withMessages([
@@ -178,11 +213,11 @@ class CheckoutController extends Controller
                 $discount = $coupon->calculateDiscount($subtotal);
             }
 
-            $shipping = ($subtotal - $discount) >= 5000000 ? 0 : 30000;
+            $shipping = $cartService->shippingFee($subtotal - $discount);
             $total = max(0, $subtotal - $discount + $shipping);
 
             $order = Order::create([
-                'order_code' => 'TS-' . now()->format('Ymd') . '-' . strtoupper(Str::random(8)),
+                'order_code' => $this->generateOrderCode(),
                 'user_id' => $user->id,
                 'coupon_id' => $coupon ? $coupon->id : null,
                 'customer_name' => $data['customer_name'],
@@ -253,8 +288,17 @@ class CheckoutController extends Controller
         if ($redirect = $this->ensureCustomer()) {
             return $redirect;
         }
-        abort_unless($order->user_id === Auth::id(), 404);
+        abort_unless((int) $order->user_id === (int) Auth::id(), 404);
         abort_unless($order->payment_method === 'qr_transfer', 404);
+
+        if ($order->status === 'cancelled') {
+            return redirect()->route('checkout.result', $order)
+                ->with('error', 'Đơn hàng đã bị hủy nên không thể tiếp tục thanh toán.');
+        }
+
+        if ($order->payment_status !== 'unpaid') {
+            return redirect()->route('checkout.result', $order);
+        }
 
         $qrUrl = $vietQr->imageUrl($order);
 
@@ -266,7 +310,7 @@ class CheckoutController extends Controller
         if ($redirect = $this->ensureCustomer()) {
             return $redirect;
         }
-        abort_unless($order->user_id === Auth::id(), 404);
+        abort_unless((int) $order->user_id === (int) Auth::id(), 404);
 
         return view('checkout.result', compact('order'));
     }
@@ -281,12 +325,13 @@ class CheckoutController extends Controller
         if ($redirect = $this->ensureCustomer()) {
             return $redirect;
         }
-        abort_unless($order->user_id === Auth::id(), 404);
+        abort_unless((int) $order->user_id === (int) Auth::id(), 404);
 
         DB::transaction(function () use ($order) {
             $locked = Order::whereKey($order->id)->lockForUpdate()->firstOrFail();
             abort_unless($locked->payment_method === 'qr_transfer', 404);
             abort_unless($locked->status !== 'cancelled', 409);
+            abort_unless($locked->payment_status !== 'refunded', 409);
 
             if ($locked->payment_status !== 'paid') {
                 $locked->payment_status = 'paid';

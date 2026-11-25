@@ -3,7 +3,11 @@
 @section('title', 'Thanh toán VietQR | TechStore B2C')
 
 @section('content')
-@php $money = number_format((float) $order->total_amount, 0, ',', '.') . '₫'; @endphp
+@php
+    $money = number_format((float) $order->total_amount, 0, ',', '.') . '₫';
+    $paymentBadge = ['paid' => 'success', 'refunded' => 'info', 'unpaid' => 'warning'][$order->payment_status] ?? 'secondary';
+    $paymentLabel = ['paid' => 'Đã thanh toán', 'refunded' => 'Đã hoàn tiền', 'unpaid' => 'Chờ thanh toán'][$order->payment_status] ?? $order->payment_status;
+@endphp
 <div class="row justify-content-center">
     <div class="col-lg-9">
         <div class="card border-0 shadow-sm rounded-4 overflow-hidden">
@@ -37,7 +41,7 @@
                                 <i class="bi bi-clipboard me-1"></i>Sao chép nội dung
                             </button>
                         </div>
-                        <div class="d-flex justify-content-between mb-2"><span class="text-secondary">Trạng thái</span><span class="badge bg-warning text-dark">{{ $order->payment_status === 'paid' ? 'Đã thanh toán' : 'Chờ thanh toán' }}</span></div>
+                        <div class="d-flex justify-content-between mb-2"><span class="text-secondary">Trạng thái</span><span class="badge bg-{{ $paymentBadge }}{{ $paymentBadge === 'warning' ? ' text-dark' : '' }}">{{ $paymentLabel }}</span></div>
                         <ol class="small text-secondary ps-3">
                             <li>Mở ứng dụng ngân hàng và quét mã QR.</li>
                             <li>Kiểm tra đúng tên người nhận, số tiền và nội dung.</li>
