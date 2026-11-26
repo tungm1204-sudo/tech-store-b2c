@@ -49,7 +49,7 @@ class ReviewController extends Controller
     /** Khách tự xóa đánh giá của mình, hoặc Staff/Admin xóa */
     public function destroy(Review $review)
     {
-        abort_unless($review->user_id === Auth::id() || Auth::user()->isStaffOrAdmin(), 403);
+        abort_unless((int) $review->user_id === (int) Auth::id() || Auth::user()->isStaffOrAdmin(), 403);
         $review->delete();
 
         return back()->with('success', 'Đã xóa đánh giá.');

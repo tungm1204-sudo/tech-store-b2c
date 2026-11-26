@@ -78,7 +78,7 @@ class WarrantyService
             ->find($data['order_item_id']);
 
         // Không tồn tại hoặc không phải đơn của khách -> cùng một thông báo (tránh dò ID đơn của người khác)
-        if (! $item || $item->order->user_id !== $customer->id) {
+        if (! $item || (int) $item->order->user_id !== (int) $customer->id) {
             throw new DomainException('Không tìm thấy sản phẩm trong đơn hàng của bạn.');
         }
 

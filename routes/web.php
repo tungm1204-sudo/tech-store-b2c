@@ -2,10 +2,14 @@
 
 use App\Http\Controllers\Admin\AdminAnalyticsController;
 use App\Http\Controllers\Admin\AdminReviewController;
+use App\Http\Controllers\Admin\UserController as AdminUserController;
 use App\Http\Controllers\AiAdvisorController;
+use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\CheckoutController;
 use App\Http\Controllers\HomeController;
+use App\Http\Controllers\PasswordResetController;
+use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ReviewController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\CatalogController;
@@ -43,6 +47,38 @@ if (app()->environment('local')) {
  |    Gợi ý tên route: login, register, logout, password.request,
  |                     profile.index, admin.users.index ...
  * ======================================================================== */
+Route::middleware('guest')->group(function () {
+    Route::get('/login', [AuthController::class, 'showLoginForm'])->name('login');
+    Route::post('/login', [AuthController::class, 'login'])->middleware('throttle:10,1');
+    Route::get('/register', [AuthController::class, 'showRegisterForm'])->name('register');
+    Route::post('/register', [AuthController::class, 'register'])->middleware('throttle:10,1');
+
+    Route::get('/forgot-password', [PasswordResetController::class, 'showForgotForm'])->name('password.request');
+    Route::post('/forgot-password', [PasswordResetController::class, 'sendResetLink'])->middleware('throttle:5,1')->name('password.email');
+    Route::get('/reset-password/{token}', [PasswordResetController::class, 'showResetForm'])->name('password.reset');
+    Route::post('/reset-password', [PasswordResetController::class, 'reset'])->middleware('throttle:5,1')->name('password.update');
+});
+
+Route::middleware('auth')->group(function () {
+    Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
+
+    Route::get('/profile', [ProfileController::class, 'index'])->name('profile.index');
+    Route::put('/profile', [ProfileController::class, 'update'])->name('profile.update');
+    Route::put('/profile/password', [ProfileController::class, 'updatePassword'])->name('profile.password');
+
+    Route::post('/profile/addresses', [ProfileController::class, 'storeAddress'])->name('profile.addresses.store');
+    Route::put('/profile/addresses/{address}', [ProfileController::class, 'updateAddress'])->whereNumber('address')->name('profile.addresses.update');
+    Route::patch('/profile/addresses/{address}/default', [ProfileController::class, 'setDefaultAddress'])->whereNumber('address')->name('profile.addresses.default');
+    Route::delete('/profile/addresses/{address}', [ProfileController::class, 'destroyAddress'])->whereNumber('address')->name('profile.addresses.destroy');
+});
+
+Route::prefix('admin')->name('admin.')
+    ->middleware(['auth', 'role:admin'])
+    ->group(function () {
+        Route::get('/users', [AdminUserController::class, 'index'])->name('users.index');
+        Route::patch('/users/{user}/role', [AdminUserController::class, 'updateRole'])->whereNumber('user')->name('users.role');
+        Route::patch('/users/{user}/toggle-status', [AdminUserController::class, 'toggleStatus'])->whereNumber('user')->name('users.toggle_status');
+    });
 
 
 /* ========================================================================

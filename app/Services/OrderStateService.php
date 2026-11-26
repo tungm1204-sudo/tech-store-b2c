@@ -102,7 +102,7 @@ class OrderStateService
     /** Khách tự hủy đơn (chỉ khi pending / confirmed - xem Order::canCustomerCancel) */
     public function cancelByCustomer(Order $order, User $customer, ?string $reason = null): Order
     {
-        if ($order->user_id !== $customer->id) {
+        if ((int) $order->user_id !== (int) $customer->id) {
             throw new DomainException('Bạn không có quyền thao tác trên đơn hàng này.');
         }
         if (! $order->canCustomerCancel()) {
@@ -115,7 +115,7 @@ class OrderStateService
     /** Khách bấm "Đã nhận hàng" khi đơn đang giao */
     public function confirmReceivedByCustomer(Order $order, User $customer): Order
     {
-        if ($order->user_id !== $customer->id) {
+        if ((int) $order->user_id !== (int) $customer->id) {
             throw new DomainException('Bạn không có quyền thao tác trên đơn hàng này.');
         }
 
