@@ -48,6 +48,8 @@ class Order extends Model
         'delivered_at',
         'cancelled_reason',
         'updated_by',
+        'stock_deducted_at',
+        'stock_restored_at',
     ];
 
     protected $casts = [
@@ -56,6 +58,8 @@ class Order extends Model
         'shipping_fee' => 'decimal:2',
         'total_amount' => 'decimal:2',
         'delivered_at' => 'datetime',
+        'stock_deducted_at' => 'datetime',
+        'stock_restored_at' => 'datetime',
     ];
 
     public function user()

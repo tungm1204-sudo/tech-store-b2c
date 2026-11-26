@@ -7,6 +7,8 @@ use App\Services\CartService;
 use Illuminate\Pagination\Paginator;
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\ServiceProvider;
+use App\Models\Order;
+use App\Observers\OrderObserver;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -18,6 +20,7 @@ class AppServiceProvider extends ServiceProvider
     public function boot()
     {
         Paginator::useBootstrapFive();
+        Order::observe(OrderObserver::class);
 
         View::composer('layouts.*', function ($view) {
             try {

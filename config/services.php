@@ -31,4 +31,11 @@ return [
         'region' => env('AWS_DEFAULT_REGION', 'us-east-1'),
     ],
 
+    // VietQR Quick Link: tạo QR theo đúng số tiền và mã đơn.
+    // Cấu hình tài khoản nhận tiền trong file .env của môi trường chạy.
+    'vietqr' => [
+        'bank_id' => env('VIETQR_BANK_ID'),
+        'account_no' => env('VIETQR_ACCOUNT_NO'),
+        'account_name' => env('VIETQR_ACCOUNT_NAME'),
+    ],
 ];
