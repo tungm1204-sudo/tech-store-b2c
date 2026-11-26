@@ -83,7 +83,8 @@ class CartCheckoutTest extends TestCase
     {
         $p = $this->makeProduct();
 
-        $this->post(route('cart.add'), ['product_id' => $p->id, 'quantity' => 2])
+        $this->from(route('cart.index'))
+            ->post(route('cart.add'), ['product_id' => $p->id, 'quantity' => 2])
             ->assertRedirect(route('cart.index'));
 
         $this->get(route('cart.index'))->assertOk()->assertSee('Laptop Test');

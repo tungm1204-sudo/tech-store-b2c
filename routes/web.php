@@ -55,7 +55,7 @@ Route::get('/products', [CatalogController::class, 'index'])->name('products.ind
 Route::get('/products/{slug}', [CatalogController::class, 'show'])->name('products.show');
 
 Route::prefix('admin')->name('admin.')
-    ->middleware(['auth', 'role:staff,admin'])
+    ->middleware(['auth', 'role:admin'])
     ->group(function () {
         Route::resource('categories', AdminCategoryController::class)->except(['show']);
         Route::resource('brands', AdminBrandController::class)->except(['show']);

@@ -110,7 +110,7 @@ class ProductController extends Controller
             'battery' => ['nullable', 'string', 'max:100'],
             'short_description' => ['nullable', 'string', 'max:255'],
             'description'       => ['nullable', 'string'],
-            'thumbnail_file'    => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp,svg', 'max:2048'],
+            'thumbnail_file'    => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:2048'],
         ]);
 
         // Checkbox không tick thì không được gửi lên, nên phải đọc bằng boolean()

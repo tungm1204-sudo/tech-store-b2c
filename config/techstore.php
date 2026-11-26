@@ -10,12 +10,12 @@ return [
 
     /*
      * Quy ước tồn kho giữa module Giỏ hàng/Checkout (Phúc) và module Đơn hàng (Trung Anh):
-     *   - Phúc TRỪ kho khi tạo đơn (lockForUpdate trong CheckoutController).
-     *   - Trung Anh HOÀN kho khi đơn bị hủy (OrderStateService::transition -> cancelled).
-     * Nếu nhóm quyết định trừ kho ở bước khác (vd: lúc duyệt đơn), đổi giá trị này thành false
-     * và chuyển logic trừ/hoàn kho tương ứng.
+     *   - Phúc TRỪ kho khi tạo đơn (CheckoutController) và gắn cờ stock_deducted_at.
+     *   - OrderObserver + OrderInventoryService (Phúc) TỰ ĐỘNG HOÀN kho, trừ lại sold_count
+     *     và hoàn lượt mã giảm giá ĐÚNG 1 LẦN khi đơn chuyển sang status = 'cancelled'.
+     *   - Vì vậy tắt restock_on_cancel ở OrderStateService (false) để tránh hoàn kho gấp đôi!
      */
-    'restock_on_cancel' => env('TECHSTORE_RESTOCK_ON_CANCEL', true),
+    'restock_on_cancel' => env('TECHSTORE_RESTOCK_ON_CANCEL', false),
 
     // Số ngày kể từ lúc giao hàng thành công mà khách còn được gửi yêu cầu ĐỔI TRẢ (request_type = return)
     'return_window_days' => (int) env('TECHSTORE_RETURN_WINDOW_DAYS', 30),

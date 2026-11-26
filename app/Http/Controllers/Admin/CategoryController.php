@@ -32,12 +32,23 @@ class CategoryController extends Controller
             'description' => ['nullable', 'string', 'max:500'],
         ]);
 
-        $data['slug'] = Str::slug($data['name']);
+        $data['slug'] = $this->uniqueSlug($data['name']);
 
         Category::create($data);
 
         return redirect()->route('admin.categories.index')
             ->with('success', 'Đã thêm danh mục.');
+    }
+
+    private function uniqueSlug(string $name): string
+    {
+        $base = Str::slug($name) ?: 'category';
+        $slug = $base;
+        $i = 2;
+        while (Category::where('slug', $slug)->exists()) {
+            $slug = $base . '-' . $i++;
+        }
+        return $slug;
     }
 
     public function edit(Category $category)

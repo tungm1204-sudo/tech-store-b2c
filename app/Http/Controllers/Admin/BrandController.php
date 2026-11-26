@@ -27,10 +27,21 @@ class BrandController extends Controller
             'name'    => ['required', 'string', 'max:100', 'unique:brands,name'],
             'country' => ['nullable', 'string', 'max:50'],
         ]);
-        $data['slug'] = Str::slug($data['name']);
+        $data['slug'] = $this->uniqueSlug($data['name']);
         Brand::create($data);
 
         return redirect()->route('admin.brands.index')->with('success', 'Đã thêm thương hiệu.');
+    }
+
+    private function uniqueSlug(string $name): string
+    {
+        $base = Str::slug($name) ?: 'brand';
+        $slug = $base;
+        $i = 2;
+        while (Brand::where('slug', $slug)->exists()) {
+            $slug = $base . '-' . $i++;
+        }
+        return $slug;
     }
 
     public function edit(Brand $brand)
