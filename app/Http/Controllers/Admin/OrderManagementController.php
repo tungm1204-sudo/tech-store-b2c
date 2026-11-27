@@ -4,19 +4,18 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Order;
+use App\Services\OrderReviewService;
 use App\Services\OrderStateService;
 use DomainException;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 
-/**
- * Nhân viên / Admin: tiếp nhận & xử lý đơn hàng theo các bước trạng thái.
- * (Phụ trách: Trung Anh)
- */
 class OrderManagementController extends Controller
 {
-    public function __construct(private OrderStateService $states)
-    {
+    public function __construct(
+        private OrderStateService $states,
+        private OrderReviewService $reviews
+    ) {
     }
 
     public function index(Request $request)
@@ -55,6 +54,7 @@ class OrderManagementController extends Controller
             'flow'    => OrderStateService::FLOW,
             'next'    => $this->states->allowedNext($order),
             'actions' => OrderStateService::ACTION_LABELS,
+            'review'  => $this->reviews->review($order),
         ]);
     }
 
@@ -62,7 +62,10 @@ class OrderManagementController extends Controller
     {
         $data = $request->validate([
             'to'     => ['required', Rule::in(array_keys(Order::STATUS_LABELS))],
-            'reason' => ['nullable', 'string', 'max:255'],
+            'reason' => [Rule::requiredIf($request->input('to') === 'cancelled'), 'nullable', 'string', 'min:5', 'max:255'],
+        ], [
+            'reason.required' => 'Vui lòng nhập lý do từ chối / hủy đơn để khách hàng biết.',
+            'reason.min'      => 'Lý do từ chối / hủy đơn cần ít nhất 5 ký tự.',
         ]);
 
         try {
