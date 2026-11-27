@@ -63,7 +63,8 @@
             <div class="text-uppercase small text-secondary fw-bold mb-1 px-2">Quản trị Cốt lõi (Admin)</div>
             <ul class="nav flex-column mb-3">
                 <li class="nav-item"><a href="{{ ts_route('admin.products.index') }}" class="nav-link {{ request()->routeIs('admin.products.*') ? 'active' : '' }}"><i class="bi bi-laptop me-2"></i>Sản phẩm & Specs (Tuyến)</a></li>
-                <li class="nav-item"><a href="{{ ts_route('admin.catalog.index') }}" class="nav-link {{ request()->routeIs('admin.catalog.*') ? 'active' : '' }}"><i class="bi bi-tags me-2"></i>Danh mục & Hãng (Tuyến)</a></li>
+                <li class="nav-item"><a href="{{ ts_route('admin.categories.index') }}" class="nav-link {{ request()->routeIs('admin.categories.*') ? 'active' : '' }}"><i class="bi bi-tags me-2"></i>Danh mục (Tuyến)</a></li>
+                <li class="nav-item"><a href="{{ ts_route('admin.brands.index') }}" class="nav-link {{ request()->routeIs('admin.brands.*') ? 'active' : '' }}"><i class="bi bi-building me-2"></i>Thương hiệu (Tuyến)</a></li>
                 <li class="nav-item"><a href="{{ ts_route('admin.coupons.index') }}" class="nav-link {{ request()->routeIs('admin.coupons.*') ? 'active' : '' }}"><i class="bi bi-ticket-perforated me-2"></i>Mã giảm giá (Phúc)</a></li>
                 <li class="nav-item"><a href="{{ ts_route('admin.users.index') }}" class="nav-link {{ request()->routeIs('admin.users.*') ? 'active' : '' }}"><i class="bi bi-people me-2"></i>Tài khoản & RBAC (Điền)</a></li>
             </ul>

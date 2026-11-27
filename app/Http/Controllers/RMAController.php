@@ -73,7 +73,7 @@ class RMAController extends Controller
 
     public function show(Request $request, WarrantyRequest $warranty)
     {
-        abort_unless($warranty->user_id === $request->user()->id, 404);
+        abort_unless((int) $warranty->user_id === (int) $request->user()->id, 404);
 
         $warranty->load(['order', 'orderItem.product', 'handler']);
 

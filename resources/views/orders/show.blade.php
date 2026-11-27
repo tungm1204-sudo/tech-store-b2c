@@ -41,9 +41,12 @@
                         <td class="text-end">{{ number_format($item->unit_price, 0, ',', '.') }}₫</td>
                         <td class="text-center">{{ $item->quantity }}</td>
                         <td class="text-end">{{ number_format($item->line_total, 0, ',', '.') }}₫</td>
-                        <td class="text-end">
+                        <td class="text-end text-nowrap">
                             @if($order->status === 'delivered')
                                 <a class="btn btn-sm btn-outline-primary" href="{{ route('warranties.create', ['order_item' => $item->id]) }}"><i class="bi bi-tools"></i> Bảo hành / Đổi trả</a>
+                                @if($item->product)
+                                    <a class="btn btn-sm btn-outline-warning ms-1" href="{{ ts_route('reviews.index', $item->product->slug) }}"><i class="bi bi-star"></i> Đánh giá</a>
+                                @endif
                             @endif
                         </td>
                     </tr>

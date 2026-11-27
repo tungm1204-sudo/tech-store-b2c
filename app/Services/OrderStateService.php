@@ -91,7 +91,7 @@ class OrderStateService
 
     public function cancelByCustomer(Order $order, User $customer, ?string $reason = null): Order
     {
-        if ($order->user_id !== $customer->id) {
+        if ((int) $order->user_id !== (int) $customer->id) {
             throw new DomainException('Bạn không có quyền thao tác trên đơn hàng này.');
         }
         if (! $order->canCustomerCancel()) {
@@ -103,7 +103,7 @@ class OrderStateService
 
     public function confirmReceivedByCustomer(Order $order, User $customer): Order
     {
-        if ($order->user_id !== $customer->id) {
+        if ((int) $order->user_id !== (int) $customer->id) {
             throw new DomainException('Bạn không có quyền thao tác trên đơn hàng này.');
         }
 

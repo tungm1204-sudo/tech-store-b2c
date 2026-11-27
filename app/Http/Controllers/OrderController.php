@@ -71,6 +71,6 @@ class OrderController extends Controller
 
     private function ensureOwner(Request $request, Order $order): void
     {
-        abort_unless($order->user_id === $request->user()->id, 404);
+        abort_unless((int) $order->user_id === (int) $request->user()->id, 404);
     }
 }
